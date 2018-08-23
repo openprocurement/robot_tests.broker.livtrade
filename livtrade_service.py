@@ -49,6 +49,12 @@ def convert_date_to_iso(v_date):
    localized_date = time_zone.localize(date_obj)
    return localized_date.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
 
+def convert_date_time_to_iso(v_date_time):
+   date_obj = datetime.strptime(v_date_time, "%d.%m.%Y %H:%M")
+   time_zone = pytz.timezone('Europe/Kiev')
+   localized_date = time_zone.localize(date_obj)
+   return localized_date.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+
 def download_file(url, file_name, output_dir):
    urllib.urlretrieve(url, ('{}/{}'.format(output_dir, file_name)))
 
@@ -56,7 +62,7 @@ def inc(value):
    return int(value) + 1
 
 def get_upload_file_path():
-   return os.path.join(os.getcwd(), 'src', 'robot_tests.broker.mytender', 'test.txt')
+   return os.path.join(os.getcwd(), 'src', 'robot_tests.broker.livtrade', 'test.txt')
 
 def bid_value(tender_data):
     if 'value' in tender_data['data']:
