@@ -152,11 +152,9 @@ Login
     ${cav_id}=    Get From Dictionary    ${items[0].classification}    id
     ${quantity}=    get_quantity    ${items[0]}
     Switch Browser    ${BROWSER_ALIAS}
-    Wait Until Page Contains Element    id=cabinet    3
     Натиснути    id=cabinet
-    Wait Until Page Contains Element    id=create-auction-btn    20
     Натиснути    id=create-auction-btn
-    Wait Until Page Contains Element    id=lots-name    20
+    Wait Until Page Contains Element    id=lots-name    5
     Select From List By Value    id=lots-procurementmethodtype    ${ARGUMENTS[1].data.procurementMethodType}
     Input text    id=lots-name    ${title}
     Input text    id=lots-description    ${description}
@@ -278,12 +276,12 @@ Login
 Пошук тендера по ідентифікатору
     [Arguments]    ${username}  ${tender_uaid}
     Switch Browser    ${BROWSER_ALIAS}
-    Go to    ${USERS.users['${username}'].default_page}
-    Wait Until Page Contains Element    id = auctionssearch-main_search
+    Sleep    3
+    Натиснути    id=home-link
+    Натиснути    id = auctionssearch-main_search
     Input Text    id = auctionssearch-main_search    ${tender_uaid}
     Натиснути    id = public-search-btn
     Sleep    2
-    Wait Until Page Contains Element    id=auction-view-btn
     Натиснути    id=auction-view-btn
 
 Отримати інформацію про cancellations[0].status
@@ -324,9 +322,8 @@ Login
 
 Отримати інформацію із тендера
     [Arguments]  ${username}  ${tender_uaid}  ${fieldname}
-    Run Keyword If  '${fieldname}' == 'tenderPeriod.endDate'
-    ...  Перейти на сторінку тендера  ${username}  ${tender_uaid}
-    ${return_value}=  Run Keyword  Отримати інформацію про ${fieldname}
+    Run keyword    livtrade.Перейти на сторінку тендера  ${username}  ${tender_uaid}
+    ${return_value}=  Run Keyword  livtrade.Отримати інформацію про ${fieldname}
     [return]  ${return_value}
 
 Отримати текст із поля і показати на сторінці
@@ -527,23 +524,23 @@ Login
     ${title}=    Get From Dictionary    ${ARGUMENTS[2].data}    title
     ${description}=    Get From Dictionary    ${ARGUMENTS[2].data}    description
     livtrade.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[1]}
-    Wait Until Page Contains Element    id= create-question-btn
     Натиснути    id=create-question-btn
+    Sleep    1
     Input text    id=question-title    ${title}
     Input text    id=question-description    ${description}
     Натиснути    id= submit-question-btn
     ${description}=    Get From Dictionary    ${ARGUMENTS[2].data}    description
 
 Задати запитання на предмет
-  [Arguments]  ${username}  ${tender_uaid}  ${item_id}  ${question}
-  livtrade.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
-  Sleep    2
-  Натиснути     id = ${item_id}item
-  Sleep  3
-  Input text          id=question-title                 ${question.data.title}
-  Input text          id=question-description          ${question.data.description}
-  Натиснути     id=submit-question-btn
-  Sleep  3
+    [Arguments]  ${username}  ${tender_uaid}  ${item_id}  ${question}
+    livtrade.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    Sleep    2
+    Натиснути     id = ${item_id}item
+    Sleep  3
+    Input text          id=question-title                 ${question.data.title}
+    Input text          id=question-description          ${question.data.description}
+    Натиснути     id=submit-question-btn
+    Sleep  3
 
 Отримати інформацію про questions[${index}].title
     ${index}=    inc    ${index}
@@ -602,6 +599,7 @@ Login
     Run Keyword If    '${amount}' != ''   Input Text    id=bids-value_amount    ${amount}
     Натиснути    id = bid-save-btn
     Натиснути    id = bid-activate-btn
+    Sleep    3
     Reload Page
 
 Скасувати цінову пропозицію
@@ -628,6 +626,7 @@ Login
     ${value}=    Convert To String    ${amount_value}
     Input Text    id=bids-value_amount    ${value}
     Натиснути    id = bid-save-btn
+    Sleep    3
     Reload Page
 
 Завантажити фінансову ліцензію
@@ -637,6 +636,7 @@ Login
     Select From List By Value    id = files-type    financialLicense
     Choose File    id = files-file    ${path}
     Натиснути    id = document-upload-btn
+    Sleep    3
     Reload Page
 
 Змінити документ в ставці
@@ -651,6 +651,7 @@ Login
     Select From List By Value    id = files-type    commercialProposal
     Choose File       id = files-file    ${ARGUMENTS[1]}
     Натиснути     id=document-upload-btn
+    Sleep    3
     Reload Page
 
 Завантажити документ в ставку
@@ -663,23 +664,18 @@ Login
     Select From List By Value    id = files-type    commercialProposal
     Choose File       id = files-file    ${ARGUMENTS[1]}
     Натиснути     id=document-upload-btn
+    Sleep    3
     Reload Page
 
 Отримати посилання на аукціон для глядача
     [Arguments]  ${username}  ${tender_uaid}  ${lot_id}=${Empty}
-    Switch Browser  ${BROWSER_ALIAS}
-    Wait Until Keyword Succeeds   10 x   15 s   Run Keywords
-    ...   Reload Page
-    ...   AND   Element Should Be Visible   id = auction-url
+    livtrade.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     ${tender.data.auctionUrl}=    Get Text    id = auction-url
     [Return]    ${tender.data.auctionUrl}
 
 Отримати посилання на аукціон для учасника
     [Arguments]  ${username}  ${tender_uaid}  ${lot_id}=${Empty}
-    Switch Browser  ${BROWSER_ALIAS}
-    Wait Until Keyword Succeeds   10 x   15 s   Run Keywords
-    ...   Reload Page
-    ...   AND   Element Should Be Visible   id = auction-url
+    livtrade.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     ${tender.data.auctionUrl}=    Get Text    id = auction-url
     [Return]    ${tender.data.auctionUrl}
 
@@ -702,10 +698,10 @@ Login
     [Return]    ${tender_doc_number}
 
 Отримати кількість документів в ставці
-  [Arguments]  ${username}  ${tender_uaid}  ${bid_index}
-  livtrade.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
-  ${bid_doc_number}   Get Matching Xpath Count   xpath=(//*[@id='pnAwardList']/div[last()]/div/div[1]/div/div/div[2]/table)
-  [Return]  ${bid_doc_number}
+    [Arguments]  ${username}  ${tender_uaid}  ${bid_index}
+    livtrade.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    ${bid_doc_number}   Get Matching Xpath Count   xpath=(//*[@id='pnAwardList']/div[last()]/div/div[1]/div/div/div[2]/table)
+    [Return]  ${bid_doc_number}
 
 Отримати документ
     [Arguments]    ${username}    ${tender_uaid}    ${doc_id}
@@ -755,6 +751,7 @@ Login
     Натиснути    id = disqualify-link
     Choose File    id = files-file    ${filepath}
     Натиснути    id=upload-disqualification-btn
+    Sleep    3
 
 Завантажити протокол аукціону
     [Arguments]    ${username}    ${tender_uaid}    ${filepath}    ${award_index}
@@ -764,6 +761,7 @@ Login
     Натиснути    id = upload-protocol-btn
     Choose File    id = files-file    ${testFilePath}
     Натиснути    id=bid-upload-protocol
+    Sleep    3
 
 Підтвердити постачальника
     [Arguments]  ${username}  ${tender_uaid}  ${award_num}
@@ -775,7 +773,6 @@ Login
     [Arguments]    ${username}    ${tender_uaid}    ${contract_num}    ${filepath}
     livtrade.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
     Натиснути    id = bids[0].link
-    Wait Until Page Contains Element    id = upload-contract-link
     Натиснути    id = upload-contract-link
     Choose File    id = files-file    ${filepath}
     Натиснути    id = upload-contract-btn
@@ -785,14 +782,14 @@ Login
     [Arguments]  ${username}  ${tender_uaid}  ${award_index}
     livtrade.Пошук тендера по ідентифікатору    ${username}  ${tender_uaid}
     Натиснути    id=bids[0].link
-    Wait Until Page Contains Element    id = confirm-payment-btn
+    Натиснути    id = confirm-payment-btn
+    Sleep    3
 
 Підтвердити підписання контракту
     [Arguments]    ${username}    ${tender_uaid}    ${contract_num}
     ${file_path}    ${file_title}    ${file_content}=    create_fake_doc
     livtrade.Пошук тендера по ідентифікатору    ${username}  ${tender_uaid}
     Натиснути    id = bids[0].link
-    Wait Until Page Contains Element    id = contract-signed-btn
     Натиснути    id = contract-signed-btn
     Натиснути    id = contract-signed-submit
 
@@ -805,3 +802,37 @@ Login
     Input text          id = awards-description    ${description}
     Choose File    id = files-file    ${testFilePath}
     Натиснути       id = upload-disqualification-btn
+
+Отримати інформацію про auctionParameters.dutchSteps
+    ${return_value}=    Get text    id=auction-dutchSteps
+    ${return_value}=    Convert to number    ${return_value}
+    [Return]    ${return_value}
+
+Отримати інформацію про contracts[-1].datePaid
+    [Arguments]    @{ARGUMENTS}
+    Run keyword    livtrade.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[1]}
+    ${return_value}=    Get text    id=contracts-1-datePaid
+    Log to console    ${return_value}
+    [Return]    ${return_value}
+
+Отримати інформацію про contracts[1].datePaid
+    [Arguments]    @{ARGUMENTS}
+    Run keyword    livtrade.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[1]}
+    ${return_value}=    Get text    id=contracts-0-datePaid
+    Log to console    ${return_value}
+    [Return]    ${return_value}
+
+Отримати інформацію про contracts[1].status
+    [Arguments]    @{ARGUMENTS}
+    Run keyword    livtrade.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}    ${ARGUMENTS[1]}
+    ${return_value}=    Get text    id=contracts-0-status
+    [Return]    ${return_value}
+
+Вказати дату отримання оплати
+    [Arguments]    ${username}    ${tender_uaid}    ${award_index}    ${datePaid}
+    Run keyword    livtrade.Пошук тендера по ідентифікатору    ${username}    ${tender_uaid}
+    Натиснути    id=bids[0].link
+    Log to console    ${datePaid}
+    Input text    id=contract-payment-input    ${datePaid}
+    Натиснути    id=contract-payment-submit
+    Sleep    3
